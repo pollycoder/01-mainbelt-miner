@@ -1,10 +1,10 @@
 %%%%%%%%%%%%%%%%%%%
 % Two-body problem
 %%%%%%%%%%%%%%%%%%%
-range=[0,1;0,5];
+range=[0,0.5;0.5,5];
 
 
-[X,result]=pso(@(x)obj_func(x),range,10000,1000);
+[result,X]=pso(@(x)obj_func(x),1000,1000,[0,0.1],[0.2,5]);
 
 
 % X(0):start time
@@ -13,8 +13,7 @@ function result=obj_func(X)
 earth_T=24*3600*365;                    % Earth year (s)
 mars_T=24*3600*686.971;                 % Mar year (s)
 
-delta_X=X(2)-X(1);                      % Normalized total_time
-start_time=X(1)*earth_T;                % Waiting time
+delta_X=X(1)-X(0);                      % Normalized total_time
 total_time=delta_X*earth_T;
 
 au=149597582503.1;                      % 1AU(m)
@@ -27,7 +26,6 @@ mars_angv=2*pi/mars_T;                  % Angular velocity of mars
 % Initial position
 earth_theta=pi;
 mars_theta=2/3*pi;
-earth_theta=earth_theta+start_time*earth_angv;
 earth_position=earth_R*[cos(earth_theta),sin(earth_theta),0];
 
 % Final position

@@ -2,10 +2,10 @@ function [earth_pos, earth_vel, mars_pos, mars_vel] = ephemeris()
 
     % 设置JPL DE421星历文件路径
     % 根据实际情况修改路径
-    ephemeris_file_path = 'path/to/DE421.bsp';
+    ephemeris_file_path = '../ephemeris/de421.bsp';
 
     % 加载星历文件
-    spice_toolbox = '../mice/';  % 请替换为你的SPICE工具箱路径
+    spice_toolbox = '../mice/src/mice';  % 请替换为你的SPICE工具箱路径
     addpath(spice_toolbox);
     cspice_furnsh(ephemeris_file_path);
 
