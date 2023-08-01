@@ -1,7 +1,7 @@
 
 
 
-function [best_params, best_value] = pso(obj_function, param_ranges, num_particles, max_iter)
+function [best_params, best_value] = pso_parallel(obj_function, param_ranges, num_particles, max_iter)
     % obj_function: 要优化的目标函数句柄，接受参数向量作为输入，返回一个标量数值
     % param_ranges: 参数范围矩阵，每行代表一个参数的范围 [min_value, max_value]
     % num_particles: 粒子数量
@@ -21,7 +21,7 @@ function [best_params, best_value] = pso(obj_function, param_ranges, num_particl
     particles_best_pos = particles_pos;
     particles_best_value = zeros(num_particles, 1);
 
-    for i = 1:num_particles
+    parfor i = 1:num_particles
         particles_best_value(i) = obj_function(particles_best_pos(i, :));
     end
 
@@ -36,7 +36,7 @@ function [best_params, best_value] = pso(obj_function, param_ranges, num_particl
 
     % PSO 主循环
     for iter = 1:max_iter
-        for i = 1:num_particles
+        parfor i = 1:num_particles
             % 更新速度
             r1 = rand(1, num_params);
             r2 = rand(1, num_params);
@@ -67,6 +67,7 @@ function [best_params, best_value] = pso(obj_function, param_ranges, num_particl
             global_best_value = min_value;
             global_best_pos = particles_best_pos(min_index, :);
         end
+
         disp(['Iteration ', num2str(iter), ', Best Value: ', num2str(global_best_value)]);
     end
 
