@@ -4,7 +4,7 @@
 range=[0,1;0,5];
 
 
-[X,result]=pso_parallel(@(x)obj_func(x),range,10000,100);
+[X,result]=pso_parallel(@(x)obj_func(x),range,100000,100);
 
 
 % X(0):start time
