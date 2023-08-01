@@ -4,7 +4,7 @@
 range=[0,1;0,5];
 
 
-[X,result]=pso(@(x)obj_func(x),range,10000,1000);
+[X,result]=pso(@(x)obj_func(x),range,100000,1000);
 
 
 % X(0):start time
