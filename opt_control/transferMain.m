@@ -1,6 +1,6 @@
 clear all;clc
 
-[~,~,day]=get_constant();
+[au,~,day]=get_constant();
 [earth_pos,earth_vel]=ephemeris('EARTH');
 [mars_pos,mars_vel]=ephemeris('MARS');
 
@@ -13,7 +13,9 @@ X(2)=1.5;
 %%%%%%%%%%%%%%%%%
 t0=X(1)*day*365;                        % Initial time (s)
 tf=X(2)*day*365;                        % Final time (s)
-m0=1.25e3;                              % Initial mass (kg)                     
+m0=1.25e3;                              % Initial mass (kg)
+rmin=au;                                % Astronic unit (km) - Sun-Earth
+rmax=1.6*au;                            % Sun-Mars (km)
 
 % Initial state
 index0=round(t0/day);
@@ -36,6 +38,10 @@ bounds.phase.initialtime.lower=t0;
 bounds.phase.initialtime.upper=t0;
 bounds.phase.finaltime.lower=tf;
 bounds.phase.finaltime.upper=tf;
+
+% State bounds
+bounds.phase.initialstate.lower=x0;
+bounds.phase.initialstate.upper=x0;
 
 
 %%%%%%%%%%%%%%%%%%%%%
