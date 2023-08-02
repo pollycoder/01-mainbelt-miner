@@ -8,6 +8,6 @@ clear all
 % Two-body problem
 %%%%%%%%%%%%%%%%%%%
 range=[0,5;0,5];
-[X,result]=pso_parallel(@(x)obj_func(x),range,100,100);
+[X,result]=pso_parallel(@(x)obj_func(x),range,1000,5);
 
 
