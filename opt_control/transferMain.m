@@ -22,6 +22,7 @@ index0=round(t0/day);
 x0_pos=earth_pos(:,index0);
 x0_vel=earth_vel(:,index0);
 x0_m=m0;
+x0=[x0_pos,x0_vel,x0_m];
 
 % Final state
 indexf=round(tf/day);
