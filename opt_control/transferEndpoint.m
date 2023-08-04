@@ -5,6 +5,7 @@
 %   The integrant
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 function output=transferEndpoint(input)
-intresult=input.phase.integral;
-output.object=intresult;
+q=input.phase.integral;
+%q=input.phase.finaltime;
+output.objective=q;
 end

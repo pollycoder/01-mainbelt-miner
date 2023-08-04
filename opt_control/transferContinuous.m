@@ -9,16 +9,16 @@
 %   Control: input.phase.control - u(kN),3D
 %%%%%%%%%%%%%%%%%%%%%
 function output=transferContinuous(input)
-[~,mu,~]=get_constant();
 % Additional constants
-Isp=1500;                                   % Specific impulse (s)
-g0=9.8e-3;                                  % Gravity constant (km/s2)
+Isp=input.auxdata.Isp;                         
+g0=input.auxdata.g0;       
+Tmax=input.auxdata.Tmax;                            
 
 
 % Inputs
 t=input.phase.time;
 x=input.phase.state;
-u=input.phase.control;
+u=input.phase.control;                      
 
 % r,v,m, convenient for computing
 r=x(:,1:3);
@@ -27,16 +27,13 @@ m=x(:,7);
 
 % Dynamics
 dr=v;
-r_norm=norm(r,2);
-dv=-mu/r_norm*r+u/m;
-u_norm=norm(u,2);
-dm=-u_norm/(Isp*g0);
-output.phase.dynamics=[dr,dv,dm];
+r_norm=sqrt(sum(r.*r,2));
+dv=-input.auxdata.mu./(r_norm.^3).*r+u(:,1).*u(:,2:4)./m;
+dm=-u(:,1)./(Isp*g0);
+output.dynamics=[dr,dv,dm];
 
 % Path constraint
-path=[sum(u.*u,2)];
+path=[sum(u(:,2:4).*u(:,2:4),2)];
 output.path=path;
-
-% Integrant
-output.integrant=norm(u);
+output.integrand=sqrt(sum(u(:,1).*u(:,1),2));
 end

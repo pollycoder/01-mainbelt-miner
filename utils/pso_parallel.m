@@ -67,7 +67,9 @@ function [best_params, best_value] = pso_parallel(obj_function, param_ranges, nu
             global_best_value = min_value;
             global_best_pos = particles_best_pos(min_index, :);
         end
-        disp(['Iteration ', num2str(iter), ', Best Value: ', num2str(global_best_value)]);
+        if mod(iter,100)==0
+            disp(['Iteration ', num2str(iter), ', Best Value: ', num2str(global_best_value)]);
+        end
     end
 
     % 返回优化结果

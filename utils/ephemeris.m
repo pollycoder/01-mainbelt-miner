@@ -2,15 +2,15 @@ function [pos, vel] = ephemeris(planet)
 
     % 设置JPL DE421星历文件路径
     % 根据实际情况修改路径
-    ephemeris_file_path = '../ephemeris/de421.bsp';
+    ephemeris_file_path = './ephemeris/de405.bsp';
 
     % 加载星历文
-    cspice_furnsh('../mice/data/cook_01.tls');
+    cspice_furnsh('./mice/data/cook_01.tls');
     cspice_furnsh(ephemeris_file_path);
 
     % 定义时间范围（示例：从2023年1月1日到2023年12月31日）
     start_time = '2023 JAN 01 00:00:00.000';
-    end_time = '2030 DEC 31 23:59:59.999';
+    end_time = '2033 DEC 31 23:59:59.999';
 
     % 设定时间间隔（单位：秒，示例设置为1天）
     time_step = cspice_spd;
