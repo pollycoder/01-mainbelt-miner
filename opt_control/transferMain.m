@@ -71,11 +71,11 @@ bounds.phase.state.lower=[rmin*ones(1,3),vmin*ones(1,3),mf];
 bounds.phase.state.upper=[rmax*ones(1,3),vmax*ones(1,3),m0];
 
 % Control bounds
-bounds.phase.control.lower=[0,-ones(1,3)];
-bounds.phase.control.upper=[auxdata.Tmax,ones(1,3)];
+bounds.phase.control.lower=-ones(1,3);
+bounds.phase.control.upper=+ones(1,3);
 
 % Path constraint
-bounds.phase.path.lower=1;
+bounds.phase.path.lower=0;
 bounds.phase.path.upper=1;
 
 % Integral constraint
@@ -145,7 +145,6 @@ setup.mesh.phase.fraction =  0.1*ones(1,10);
 %%%%%%%%%%%%%%%%%%%%%%%%
 output=gpops2(setup);
 result=output.result.objective;
-result=result.*auxdata.Tmax/(auxdata.g0*auxdata.Isp);
 fprintf("J=%f",result);
 
 x=output.result.solution.phase.state(:,1);
