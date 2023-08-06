@@ -171,9 +171,9 @@ setup.derivatives.supplier = 'sparseCD';
 setup.derivatives.derivativelevel = 'second';
 
 % Mesh
-setup.mesh.method = 'hp1';
+setup.mesh.method = 'hp-LiuRao-Legendre';
 setup.mesh.tolerance = 1e-9;
-setup.mesh.maxiteration = 10000;
+setup.mesh.maxiteration = 10;
 setup.mesh.colpointsmax = 10000;
 setup.mesh.colpointsmin = 1000;
 setup.mesh.phase.colpoints = 10*ones(1,10);
