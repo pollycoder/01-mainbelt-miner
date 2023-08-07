@@ -11,13 +11,13 @@
 function output=transferContinuous(input)
 % Additional constants
 Isp_newUnit=input.auxdata.Isp_newUnit;                         
-g0_newUnit=input.auxdata.g0_newUnit;       
-Tmax_newUnit=input.auxdata.Tmax_newUnit;                            
+g0_newUnit=input.auxdata.g0_newUnit;                                  
 
-
+for iphase=1:length(input.phase)
+Tmax_newUnit=input.auxdata.Tmax_newUnit(iphase); 
 % Inputs
-x_newUnit=input.phase.state;
-u_newUnit=input.phase.control;                      
+x_newUnit=input.phase(iphase).state;
+u_newUnit=input.phase(iphase).control;                      
 
 % r,v,m, convenient for computing
 r_newUnit=x_newUnit(:,1:3);
@@ -46,14 +46,16 @@ for i=1:num_points
     acc1_newUnit(i,:)=acc1.*input.auxdata.aUnit;
 end
 
-acc2_newUnit=diag(m_newUnit.^-1)*u_newUnit.*Tmax_newUnit;                
+rnorm_newUnit=sqrt(r_newUnit(:,1).^2+r_newUnit(:,2).^2+r_newUnit(:,3).^2);
+acc2_newUnit=diag(m_newUnit.^-1)*u_newUnit.*Tmax_newUnit.*(2.27./rnorm_newUnit).^2;                
 
 dv_newUnit=acc1_newUnit+acc2_newUnit;
 
 unorm_newUnit=sqrt(u_newUnit(:, 1).^2 + u_newUnit(:, 2).^2 + u_newUnit(:, 3).^2);
-dm_newUnit=-Tmax_newUnit.*unorm_newUnit./(Isp_newUnit.*g0_newUnit);
-output.dynamics=[dr_newUnit,dv_newUnit,dm_newUnit];
+dm_newUnit=-Tmax_newUnit.*unorm_newUnit./(Isp_newUnit.*g0_newUnit).*(2.27./rnorm_newUnit).^2;
+output(iphase).dynamics=[dr_newUnit,dv_newUnit,dm_newUnit];
 
 % Path constraint
-output.path=unorm_newUnit;
+output(iphase).path=unorm_newUnit;
+end
 end
