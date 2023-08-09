@@ -11,6 +11,7 @@ tf1=input.phase(1).finaltime;
 x01=input.phase(1).initialstate;
 xf1=input.phase(1).finalstate;
 
+
 % Mars to Main Belt
 t02=input.phase(2).initialtime;
 tf2=input.phase(2).finaltime;

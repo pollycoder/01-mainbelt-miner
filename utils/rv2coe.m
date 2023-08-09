@@ -41,7 +41,7 @@ function coe = rv2coe(r, v, mu)
         coe(5) = F;
     else  % 抛物线轨道
         B = cross(h_vec, r) / h;
-        coe(5) = atan2(dot(B, v) / sqrt(mu), dot(r, v) / sqrt(mu));
+        coe(5) = atan2(real(dot(B, v)) / sqrt(mu), dot(r, v) / sqrt(mu));
     end
     
     % 计算真近点角或偏近点角对应的时间参数

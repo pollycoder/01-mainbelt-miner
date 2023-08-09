@@ -30,7 +30,7 @@ tf=X(2)*auxdata.year;                            % Final time (s)
        
 
 % Mass
-m0=3e7;                                        % Initial mass (kg)
+m0=3e4;                                        % Initial mass (kg)
 mf=0.1*m0;                                     % Final minimum residual mass (kg)
 
 % Oribit elements of two orbits
@@ -42,6 +42,7 @@ i0=0;                                         % Inclination - plane
 Omega0=0;                                     % Longtitude of ascending node (rad) - circular
 omega0=0;                                     % Argument of periapsis (rad) - circular
 f0=0;                                         % Initial true anomaly (rad) - initial position
+[p0,f0,g_0,h0,k0,L0]=coe2mee(a0,e0,i0,Omega0,omega0,f0);
 
 % Interim orbit elements - Mars
 % Final orbit elements- Main Belt
@@ -50,7 +51,8 @@ eM=0;                                         % Eccentricity (-) - circular
 iM=0;                                         % Inclination (rad) - plane
 OmegaM=0;                                     % Longtitude of ascending node (rad) - circular
 omegaM=0;                                     % Argument of periapsis (rad) - circular
-fM=1.7*pi;                                      % Final true anomaly (rad) - final position
+fM=1.7*pi;                                    % Final true anomaly (rad) - final position
+[pM,fM,gM,hM,kM,LM]=coe2mee(aM,eM,iM,OmegaM,omegaM,fM);
 
 % Final orbit elements- Main Belt
 af=2.27*auxdata.au;                           % Semi-major of Earth's orbit (m)
@@ -59,6 +61,7 @@ i_f=0;                                        % Inclination (rad) - plane
 Omegaf=0;                                     % Longtitude of ascending node (rad) - circular
 omegaf=0;                                     % Argument of periapsis (rad) - circular
 ff=pi;                                        % Final true anomaly (rad) - final position
+[pf,ff,gf,hf,kf,Lf]=coe2mee(af,ef,i_f,Omegaf,omegaf,ff);
 
 
 %%%%%%%%%%%%%%%%%%
@@ -89,18 +92,18 @@ t0_newUnit=t0*auxdata.tUnit;
 tf_newUnit=tf*auxdata.tUnit;
 tMid_newUnit=Xmid;
                                   
-% Orbit elements
-a0_newUnit=a0*auxdata.lUnit;
-aM_newUnit=aM*auxdata.lUnit;
-af_newUnit=af*auxdata.lUnit;
-coe0_newUnit=[a0_newUnit,e0,i0,Omega0,omega0,f0];
-coeM_newUnit=[aM_newUnit,eM,iM,OmegaM,omegaM,fM];
-coef_newUnit=[af_newUnit,ef,i_f,Omegaf,omegaf,ff];
+% Orbit elements (Spring equinox)
+p0_newUnit=a0*auxdata.lUnit;
+pM_newUnit=pM*auxdata.lUnit;
+pf_newUnit=pf*auxdata.lUnit;
+mee0_newUnit=[p0_newUnit,f0,g_0,h0,k0,L0];
+meeM_newUnit=[pM_newUnit,fM,gM,hM,kM,LM];
+meef_newUnit=[pf_newUnit,ff,gf,hf,kf,Lf];
 
 % Bounds - between Main Belt and Earth
 m0_newUnit=m0*auxdata.mUnit;                           
 mf_newUnit=mf*auxdata.mUnit;                            
-rmin_newUnit=-max(af,a0)*auxdata.lUnit;                     
+rmin_newUnit=-max(pf,p0)*auxdata.lUnit;                     
 rmax_newUnit=-rmin_newUnit;                                 
 vmin_newUnit=-30000*auxdata.vUnit;                            
 vmax_newUnit=-vmin_newUnit;                                   
@@ -122,14 +125,14 @@ iphase=1;
 
 % Initial state
 x0_m_newUnit=m0_newUnit;  
-[x0_pos_newUnit,x0_vel_newUnit]=coe2rv(coe0_newUnit,auxdata.mu_newUnit);
+[x0_pos_newUnit,x0_vel_newUnit]=mee2rv(mee0_newUnit,auxdata.mu_newUnit);
 x0_newUnit=[x0_pos_newUnit',x0_vel_newUnit',x0_m_newUnit];    
 
 % Interim state
 mM_newUnit=0.85;               % Still have 70% of mass left          
 xM_m_newUnit=mM_newUnit;
 
-[Mars_pos_newUnit,Mars_vel_newUnit]=coe2rv(coeM_newUnit,auxdata.mu_newUnit);    % Mars position and velocity
+[Mars_pos_newUnit,Mars_vel_newUnit]=mee2rv(meeM_newUnit,auxdata.mu_newUnit);    % Mars position and velocity
 
 % GA-Velocity
 % Direction
@@ -157,13 +160,13 @@ N=NGuess(1);
 Node=100;                               % Nodes of one loop
 guessNode=Node*(N+1);                   % Total guess nodes
 
-coeM_newUnit(6)=mod(coeM_newUnit(6),2*pi)+N*2*pi;
+meeM_newUnit(6)=mod(meeM_newUnit(6),2*pi)+N*2*pi;
 
 for i=1:guessNode
-    coetemp_newUnit=coe0_newUnit-(coe0_newUnit-coeM_newUnit)/(guessNode-1)*(i-1);
-    coetemp_newUnit(1)=abs(coetemp_newUnit(1));
-    coetemp_newUnit(2)=abs(coetemp_newUnit(2));
-    [rtemp_newUnit,vtemp_newUnit]=coe2rv(coetemp_newUnit,auxdata.mu_newUnit);
+    meetemp_newUnit=mee0_newUnit-(mee0_newUnit-meeM_newUnit)/(guessNode-1)*(i-1);
+    meetemp_newUnit(1)=abs(meetemp_newUnit(1));
+    meetemp_newUnit(2)=abs(meetemp_newUnit(2));
+    [rtemp_newUnit,vtemp_newUnit]=mee2rv(meetemp_newUnit,auxdata.mu_newUnit);
     mtemp_newUnit=m0_newUnit-(m0_newUnit-mM_newUnit)/(guessNode-1)*(i-1);
     guess.phase(iphase).state(i,:)=[rtemp_newUnit',vtemp_newUnit',mtemp_newUnit];
     guess.phase(iphase).control(i,:)=[0.1,0.1,0];
@@ -173,7 +176,7 @@ guess.phase(iphase).time=(t0_newUnit:(tMid_newUnit-t0_newUnit)/(guessNode-1):tMi
 % Time bounds
 bounds.phase(iphase).initialtime.lower=t0_newUnit;
 bounds.phase(iphase).initialtime.upper=t0_newUnit;
-bounds.phase(iphase).finaltime.lower=tMid_newUnit;
+bounds.phase(iphase).finaltime.lower=t0_newUnit;
 bounds.phase(iphase).finaltime.upper=tMid_newUnit;
 
 % State bounds
@@ -209,7 +212,7 @@ x02_m_newUnit=mM_newUnit;
 
 % Final state          
 xf_m_newUnit=mf_newUnit;
-[xf_pos_newUnit,xf_vel_newUnit]=coe2rv(coef_newUnit,auxdata.mu);
+[xf_pos_newUnit,xf_vel_newUnit]=mee2rv(meef_newUnit,auxdata.mu);
 xf_newUnit=[xf_pos_newUnit',xf_vel_newUnit',xf_m_newUnit];
 
 % Guess
@@ -218,14 +221,14 @@ N=NGuess(2);
 Node=100;                               % Nodes of one loop
 guessNode=Node*(N+1);                   % Total guess nodes
 
-coeM_newUnit(6)=mod(coeM_newUnit(6),2*pi);
-coef_newUnit(6)=mod(coef_newUnit(6),2*pi)+N*2*pi;
+meeM_newUnit(6)=mod(meeM_newUnit(6),2*pi);
+meef_newUnit(6)=mod(meef_newUnit(6),2*pi)+N*2*pi;
 
 for i=1:guessNode
-    coetemp_newUnit=coeM_newUnit-(coeM_newUnit-coef_newUnit)/(guessNode-1)*(i-1);
-    coetemp_newUnit(1)=abs(coetemp_newUnit(1));
-    coetemp_newUnit(2)=abs(coetemp_newUnit(2));
-    [rtemp_newUnit,vtemp_newUnit]=coe2rv(coetemp_newUnit,auxdata.mu_newUnit);
+    meetemp_newUnit=meeM_newUnit-(meeM_newUnit-meef_newUnit)/(guessNode-1)*(i-1);
+    meetemp_newUnit(1)=abs(meetemp_newUnit(1));
+    meetemp_newUnit(2)=abs(meetemp_newUnit(2));
+    [rtemp_newUnit,vtemp_newUnit]=mee2rv(meetemp_newUnit,auxdata.mu_newUnit);
     mtemp_newUnit=mM_newUnit-(mM_newUnit-mf_newUnit)/(guessNode-1)*(i-1);
     guess.phase(iphase).state(i,:)=[rtemp_newUnit',vtemp_newUnit',mtemp_newUnit];
     guess.phase(iphase).control(i,:)=[0.1,0.1,0];
@@ -341,7 +344,6 @@ plot3(x(end),y(end),z(end),'g*','LineWidth',2);hold on;
 text(x(end),y(end),z(end),'Arrival');hold on;
 plot3(x1(1),y1(1),z1(1),'r*','LineWidth',2);hold on;
 text(x1(1),y1(1),z1(1),'GA-point');hold on;
-
 
 axis equal
 
